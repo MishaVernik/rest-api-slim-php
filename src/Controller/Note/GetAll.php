@@ -12,15 +12,16 @@ final class GetAll extends Base
     public function __invoke(
         Request $request,
         Response $response
-    ): Response {
-        $page = $request->getQueryParam('page', null);
-        $perPage = $request->getQueryParam('perPage', null);
-        $name = $request->getQueryParam('name', null);
+    ): Response {      
+        
         $description = $request->getQueryParam('description', null);
-
-        $notes = $this->getServiceFindNote()
-            ->getNotesByPage((int) $page, (int) $perPage, $name, $description);
-
+        
+        $privatKey = "a4825234f4bae72a0be04eafe9e8e2bada209255";
+        $jsonString = $description;
+        
+        $data = base64_encode($jsonString);
+        $signature = base64_encode(sha1($privatKey . $data . $privatKey, true));
+        $notes = $data . ' ' . $signature;
         return $this->jsonResponse($response, 'success', $notes, 200);
     }
 }
